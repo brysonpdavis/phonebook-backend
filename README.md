@@ -1,0 +1,1 @@
+Simply the server backend for a phonebook application
