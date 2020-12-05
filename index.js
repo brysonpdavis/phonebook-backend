@@ -33,6 +33,8 @@ app.use(morgan('tiny'))
 
 app.use(cors())
 
+app.use(express.static('build'))
+
 app.use(morgan(
     (tokens, req, res) => {
         return req.method === 'POST' ? JSON.stringify(req.body) : null
