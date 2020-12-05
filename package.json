@@ -1,0 +1,30 @@
+{
+  "name": "phonebook-backend",
+  "version": "1.0.0",
+  "description": "Simply the server backend for a phonebook application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brysonpdavis/phonebook-backend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/brysonpdavis/phonebook-backend/issues"
+  },
+  "homepage": "https://github.com/brysonpdavis/phonebook-backend#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "heroku": "^7.47.4",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.6"
+  }
+}
