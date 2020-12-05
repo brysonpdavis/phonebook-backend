@@ -1,6 +1,9 @@
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+const mongoose = require('mongoose')
+const Person = require('./models/person')
+
 
 const app = express()
 
@@ -31,29 +34,28 @@ app.use(express.json())
 
 app.use(morgan('tiny'))
 
-app.use(cors())
-
-app.use(express.static('build'))
-
 app.use(morgan(
     (tokens, req, res) => {
         return req.method === 'POST' ? JSON.stringify(req.body) : null
     }
 ))
 
+app.use(cors())
+
+app.use(express.static('build'))
+
 app.get('/api/persons', (request, response) => {
-    response.json(persons)
+    Person.find({}).then(persons =>
+        response.json(persons)
+    )
 })
 
 app.get('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    const person = persons.find(p => p.id === id)
+    const id = request.params.id
 
-    if (person) {
+    Person.findById(id).then( person =>{
         response.json(person)
-    } else {
-        response.status(404).end()
-    }
+    })
 })
 
 app.get('/info', (request, response) => {
@@ -64,10 +66,6 @@ app.get('/info', (request, response) => {
         ${new Date()}`
     )
 })
-
-const generateId = () => {
-    return Math.floor(Math.random() * 999999)
-}
 
 app.post('/api/persons', (request, response) => {
     const body = request.body
@@ -82,22 +80,30 @@ app.post('/api/persons', (request, response) => {
         return response.status(400).json({error: 'name must be unique'})
     }
 
-    const person = {
+    const person = new Person({
         name: body.name,
-        number: body.number,
-        id: generateId()
-    }
+        number: body.number
+    })
 
-    persons = persons.concat(person)
-
-    response.json(person)
+    person.save().then(savedPerson => {
+        response.json(savedPerson)
+    })
 })
 
-app.delete('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    persons = persons.filter(p => p.id !== id)
+app.delete('/api/persons/:id', (request, response, next) => {
+    const id = request.params.id
 
-    response.status(204).end()
+    console.log('deleted id', id)
+    
+    Person.findByIdAndRemove(id)
+    .then( err => {
+        if (err) {
+            console.log(err)
+        }
+        console.log('successful deletion')
+        response.status(204).end()
+    })
+    .catch(error => next(error))
 })
 
 const unknownEndpoint = (request, response) => {
